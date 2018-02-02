@@ -8,6 +8,13 @@ public class User implements Serializable {
     private String password; //密码
     private String salt; //加密密码的盐
 
+    public User(Long id, String username, String password, String salt) {
+        this.id = id;
+        this.username = username;
+        this.password = password;
+        this.salt = salt;
+    }
+
     public Long getId() {
         return id;
     }

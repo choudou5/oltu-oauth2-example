@@ -1,62 +1,36 @@
 package cn.zetark.oauth2.service;
 
+import cn.hutool.core.util.HexUtil;
+import cn.hutool.core.util.RandomUtil;
+import cn.hutool.crypto.SecureUtil;
 import cn.zetark.oauth2.entity.User;
-import org.apache.shiro.crypto.RandomNumberGenerator;
-import org.apache.shiro.crypto.SecureRandomNumberGenerator;
-import org.apache.shiro.crypto.hash.SimpleHash;
-import org.apache.shiro.util.ByteSource;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
 public class PasswordHelper {
 
-    private RandomNumberGenerator randomNumberGenerator = new SecureRandomNumberGenerator();
-
-    @Value("${password.algorithmName}")
-    private String algorithmName = "md5";
-    @Value("${password.hashIterations}")
-    private int hashIterations = 2;
-
-    public void setRandomNumberGenerator(RandomNumberGenerator randomNumberGenerator) {
-        this.randomNumberGenerator = randomNumberGenerator;
-    }
-
-    public void setAlgorithmName(String algorithmName) {
-        this.algorithmName = algorithmName;
-    }
-
-    public void setHashIterations(int hashIterations) {
-        this.hashIterations = hashIterations;
-    }
-
     public void encryptPassword(User user) {
-
-        user.setSalt(randomNumberGenerator.nextBytes().toHex());
-
-                String newPassword = new SimpleHash(
-                algorithmName,
-                user.getPassword(),
-                ByteSource.Util.bytes(user.getCredentialsSalt()),
-                hashIterations).toHex();
-
+        user.setSalt(RandomUtil.randomString(10));
+        String pwdStr = HexUtil.encodeHexStr(user.getPassword()+user.getCredentialsSalt());
+        String newPassword = SecureUtil.md5(pwdStr);
         user.setPassword(newPassword);
     }
 
     /**
-     * 根据用户名和盐值加密
+     * 加密
      * @param username
      * @param password
-     * @param salt
+     * @param salt 盐值
      */
     public String encryptPassword(String username, String password, String salt) {
-        String pwd = new SimpleHash(
-                algorithmName,
-                password,
-                ByteSource.Util.bytes(username+salt),
-                hashIterations).toHex();
-
+        String pwdStr = HexUtil.encodeHexStr(password + salt + username);
+        String pwd = SecureUtil.md5(pwdStr);
         return pwd;
     }
+
+    public static void main(String[] args) {
+        System.out.println(new PasswordHelper().encryptPassword("admin", "123456", "8d78869f470951332959580424d4bf4f"));
+    }
+
 
 }

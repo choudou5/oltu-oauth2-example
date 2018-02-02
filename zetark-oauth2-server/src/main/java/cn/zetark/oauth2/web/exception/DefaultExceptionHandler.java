@@ -1,6 +1,5 @@
 package cn.zetark.oauth2.web.exception;
 
-import org.apache.shiro.authz.UnauthorizedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -10,14 +9,15 @@ import org.springframework.web.servlet.ModelAndView;
 
 @ControllerAdvice
 public class DefaultExceptionHandler {
+
     /**
      * 没有权限 异常
      * <p/>
      * 后续根据不同的需求定制即可
      */
-    @ExceptionHandler({UnauthorizedException.class})
+    @ExceptionHandler({Exception.class})
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public ModelAndView processUnauthenticatedException(NativeWebRequest request, UnauthorizedException e) {
+    public ModelAndView processUnauthenticatedException(NativeWebRequest request, Exception e) {
         ModelAndView mv = new ModelAndView();
         mv.addObject("exception", e);
         mv.setViewName("unauthorized");

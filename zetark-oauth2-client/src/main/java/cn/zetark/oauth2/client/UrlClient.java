@@ -25,11 +25,11 @@ public class UrlClient {
     private static String getAuthCode() throws Exception{
 
         Map<String,Object> params = new LinkedHashMap<String,Object>();
-        params.put("username",ClientParams.USERNAME);
-        params.put("password",ClientParams.PASSWORD);
-        params.put("client_id",ClientParams.CLIENT_ID);
+        params.put("username", Config.USERNAME);
+        params.put("password", Config.PASSWORD);
+        params.put("client_id", Config.CLIENT_ID);
         params.put("response_type", ResponseType.CODE.toString());
-        params.put("redirect_uri",ClientParams.OAUTH_SERVER_REDIRECT_URI);
+        params.put("redirect_uri", Config.OAUTH_SERVER_REDIRECT_URI);
 
         StringBuilder postStr = new StringBuilder();
 
@@ -42,7 +42,7 @@ public class UrlClient {
 
         byte[] postStrBytes = postStr.toString().getBytes("UTF-8");
 
-        URL url = new URL(ClientParams.OAUTH_SERVER_URL);
+        URL url = new URL(Config.OAUTH_SERVER_URL);
         HttpURLConnection connection = (HttpURLConnection)url.openConnection();
         connection.setRequestMethod(HttpMethod.POST);
         connection.setDoInput(true);
@@ -64,11 +64,11 @@ public class UrlClient {
     private static String getAccessToken(String authCode) throws Exception{
 
         Map<String,Object> params = new LinkedHashMap<String,Object>();
-        params.put("client_id",ClientParams.CLIENT_ID);
-        params.put("client_secret",ClientParams.CLIENT_SECRET);
+        params.put("client_id", Config.CLIENT_ID);
+        params.put("client_secret", Config.CLIENT_SECRET);
         params.put("grant_type","authorization_code");
         params.put("code", authCode);
-        params.put("redirect_uri",ClientParams.OAUTH_SERVER_REDIRECT_URI);
+        params.put("redirect_uri", Config.OAUTH_SERVER_REDIRECT_URI);
 
         StringBuilder postStr = new StringBuilder();
 
@@ -81,7 +81,7 @@ public class UrlClient {
 
         byte[] postStrBytes = postStr.toString().getBytes("UTF-8");
 
-        URL url = new URL(ClientParams.OAUTH_SERVER_TOKEN_URL);
+        URL url = new URL(Config.OAUTH_SERVER_TOKEN_URL);
         HttpURLConnection connection = (HttpURLConnection)url.openConnection();
         connection.setRequestMethod(HttpMethod.POST);
         connection.setDoInput(true);
@@ -112,7 +112,7 @@ public class UrlClient {
      */
     private static void getService(String accessToken) throws Exception{
 
-        URL url = new URL(ClientParams.OAUTH_SERVICE_API+"?access_token="+accessToken);
+        URL url = new URL(Config.OAUTH_SERVICE_API+"?access_token="+accessToken);
         HttpURLConnection connection = (HttpURLConnection)url.openConnection();
         connection.setRequestMethod(HttpMethod.GET);
         connection.setDoInput(true);

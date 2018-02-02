@@ -9,6 +9,13 @@ public class Client implements Serializable {
     private String clientId;
     private String clientSecret;
 
+    public Client(Long id, String clientName, String clientId, String clientSecret) {
+        this.id = id;
+        this.clientName = clientName;
+        this.clientId = clientId;
+        this.clientSecret = clientSecret;
+    }
+
     public Long getId() {
         return id;
     }

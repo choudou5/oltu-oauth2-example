@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ehcache name="es">
 
-    <diskStore path="java.io.tmpdir"/>
+    <diskStore path="/data/cache/oauth2"/>
 
     <cache name="code-cache"
            maxEntriesLocalHeap="2000"

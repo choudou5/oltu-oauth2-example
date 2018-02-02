@@ -1,9 +1,8 @@
 package cn.zetark.oauth2.web.controller.oauth;
 
-import cn.zetark.oauth2.Constants;
+import cn.zetark.oauth2.Config;
 import cn.zetark.oauth2.entity.Status;
 import cn.zetark.oauth2.entity.User;
-import cn.zetark.oauth2.service.ClientService;
 import cn.zetark.oauth2.service.OAuthService;
 import cn.zetark.oauth2.service.UserService;
 import com.google.gson.Gson;
@@ -39,8 +38,6 @@ public class AuthorizeController {
     @Autowired
     private OAuthService oAuthService;
     @Autowired
-    private ClientService clientService;
-    @Autowired
     private UserService userService;
 
     @RequestMapping(value = "/authorize")
@@ -59,14 +56,14 @@ public class AuthorizeController {
                 OAuthResponse response =
                         OAuthASResponse.errorResponse(HttpServletResponse.SC_BAD_REQUEST)
                                 .setError(OAuthError.TokenResponse.INVALID_CLIENT)
-                                .setErrorDescription(Constants.INVALID_CLIENT_ID)
+                                .setErrorDescription(Config.INVALID_CLIENT_ID)
                                 .buildJSONMessage();
                 return new ResponseEntity(response.getBody(), HttpStatus.valueOf(response.getResponseStatus()));
             }
 
             //如果用户没有登录，跳转到登陆页面
             if(!login(request)) {//登录失败时跳转到登陆页面
-                model.addAttribute("client", clientService.findByClientId(oauthRequest.getClientId()));
+                model.addAttribute("client", null);
                 return "oauth2login";
             }
 
@@ -106,7 +103,7 @@ public class AuthorizeController {
                 responseHeaders.add("Content-Type", "application/json; charset=utf-8");
                 Status status = new Status();
                 status.setCode(HttpStatus.NOT_FOUND.value());
-                status.setMsg(Constants.INVALID_REDIRECT_URI);
+                status.setMsg(Config.INVALID_REDIRECT_URI);
                 Gson gson = new GsonBuilder().create();
                 return new ResponseEntity(gson.toJson(status), responseHeaders ,HttpStatus.NOT_FOUND);
             }

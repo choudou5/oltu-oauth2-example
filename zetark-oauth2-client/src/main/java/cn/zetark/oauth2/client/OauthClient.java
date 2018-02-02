@@ -11,15 +11,10 @@ import org.apache.oltu.oauth2.common.message.types.ResponseType;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Form;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URISyntaxException;
 
 public class OauthClient {
@@ -45,18 +40,17 @@ public class OauthClient {
 
         // 创建表单，模拟填充表单并提交表单
         Form form = new Form();
-        form.param("username",ClientParams.USERNAME);
-        form.param("password",ClientParams.PASSWORD);
-        form.param("client_id",ClientParams.CLIENT_ID);
+        form.param("username", Config.USERNAME);
+        form.param("password", Config.PASSWORD);
+        form.param("client_id", Config.CLIENT_ID);
         form.param("response_type",ResponseType.CODE.toString());
-        form.param("redirect_uri",ClientParams.OAUTH_SERVER_REDIRECT_URI);
+        form.param("redirect_uri", Config.OAUTH_SERVER_REDIRECT_URI);
 
         ResteasyClient client = new ResteasyClientBuilder().build();
-        Response response = client.target(ClientParams.OAUTH_SERVER_URL)
+        Response response = client.target(Config.OAUTH_SERVER_URL)
                 .request()
                 .post(Entity.form(form));
-		System.out.println(response.getStatus());
-
+		System.out.println("服务端返回状态："+response.getStatus());
         String location = response.getLocation().toURL().toString();
 
         System.out.println(response.getLocation());
@@ -64,14 +58,13 @@ public class OauthClient {
         String authCode = location.substring(location.lastIndexOf("=")+1);
 
         try {
-            System.out.println(authCode);
+            System.out.println("authCode:"+authCode);
             makeTokenRequestWithAuthCode(authCode);
         } catch (OAuthProblemException e) {
             e.printStackTrace();
         } finally {
 
         }
-
         return response;
 	}
 
@@ -85,12 +78,12 @@ public class OauthClient {
 	private static OAuthAccessTokenResponse makeTokenRequestWithAuthCode(String authCode) throws OAuthProblemException, OAuthSystemException {
 
         OAuthClientRequest request = OAuthClientRequest
-                .tokenLocation(ClientParams.OAUTH_SERVER_TOKEN_URL)
-                .setClientId(ClientParams.CLIENT_ID)
-                .setClientSecret(ClientParams.CLIENT_SECRET)
+                .tokenLocation(Config.OAUTH_SERVER_TOKEN_URL)
+                .setClientId(Config.CLIENT_ID)
+                .setClientSecret(Config.CLIENT_SECRET)
                 .setGrantType(GrantType.AUTHORIZATION_CODE)
                 .setCode(authCode)
-                .setRedirectURI(ClientParams.OAUTH_SERVER_REDIRECT_URI)
+                .setRedirectURI(Config.OAUTH_SERVER_REDIRECT_URI)
                 .buildBodyMessage();
 
         OAuthClient oAuthClient = new OAuthClient(new URLConnectionClient());
@@ -110,8 +103,8 @@ public class OauthClient {
      */
     private static void getAuthedService(String accessToken){
         ResteasyClient client = new ResteasyClientBuilder().build();
-        Response response = client.target(ClientParams.OAUTH_SERVICE_API)
-                .queryParam("access_token",accessToken)
+        Response response = client.target(Config.OAUTH_SERVICE_API)
+                .queryParam("access_token", accessToken)
                 .request()
                 .get();
         System.out.println(response.getStatus());

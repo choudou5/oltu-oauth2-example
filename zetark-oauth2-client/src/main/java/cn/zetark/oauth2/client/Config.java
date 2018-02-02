@@ -3,7 +3,7 @@ package cn.zetark.oauth2.client;
 /**
  * 封装OAuth Server端认证需要的参数
  */
-public class ClientParams {
+public class Config {
 
 	public static final String CLIENT_ID = "c1ebe466-1cdc-4bd3-ab69-77c3561b9dee"; // 应用id CLIENT_ID
 
@@ -13,12 +13,12 @@ public class ClientParams {
 
 	public static final String PASSWORD = "123456"; // 密码
 
-	public static final String OAUTH_SERVER_URL =  "http://localhost:8080/zetark-oauth2-server/authorize"; // 授权地址
+	public static final String OAUTH_SERVER_URL =  "http://localhost:8080/authorize"; // 授权地址
 
-	public static final String OAUTH_SERVER_TOKEN_URL =  "http://localhost:8080/zetark-oauth2-server/accessToken"; // ACCESS_TOKEN换取地址
+	public static final String OAUTH_SERVER_TOKEN_URL =  "http://localhost:8080/accessToken"; // ACCESS_TOKEN换取地址
 
     public static final String OAUTH_SERVER_REDIRECT_URI =  "http://aimeizi.net"; // 回调地址
 
-    public static final String OAUTH_SERVICE_API =  "http://localhost:8080/zetark-oauth2-server/v1/openapi/userInfo"; // 测试开放数据api
+    public static final String OAUTH_SERVICE_API =  "http://localhost:8080/v1/openapi/userInfo"; // 测试开放数据api
 
 }

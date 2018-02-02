@@ -1,6 +1,6 @@
 package cn.zetark.oauth2.web.controller;
 
-import cn.zetark.oauth2.Constants;
+import cn.zetark.oauth2.Config;
 import cn.zetark.oauth2.entity.Status;
 import cn.zetark.oauth2.entity.User;
 import cn.zetark.oauth2.service.OAuthService;
@@ -17,14 +17,15 @@ import org.apache.oltu.oauth2.common.utils.OAuthUtils;
 import org.apache.oltu.oauth2.rs.request.OAuthAccessResourceRequest;
 import org.apache.oltu.oauth2.rs.response.OAuthRSResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Collections;
-import java.util.List;
 
 @RestController
 @RequestMapping("/v1/openapi")
@@ -79,17 +80,18 @@ public class UserInfoController {
             String accessToken = oauthRequest.getAccessToken();
             //验证Access Token
             if (!oAuthService.checkAccessToken(accessToken)) {
+                System.out.println(accessToken+" 如果不存在/过期了");
                 // 如果不存在/过期了，返回未验证错误，需重新验证
                 OAuthResponse oauthResponse = OAuthRSResponse
                         .errorResponse(HttpServletResponse.SC_UNAUTHORIZED)
-                        .setRealm(Constants.RESOURCE_SERVER_NAME)
+                        .setRealm(Config.RESOURCE_SERVER_NAME)
                         .setError(OAuthError.ResourceResponse.INVALID_TOKEN)
                         .buildHeaderMessage();
                 HttpHeaders responseHeaders = new HttpHeaders();
                 responseHeaders.add("Content-Type", "application/json; charset=utf-8");
                 Status status = new Status();
                 status.setCode(HttpStatus.UNAUTHORIZED.value());
-                status.setMsg(Constants.INVALID_ACCESS_TOKEN);
+                status.setMsg(Config.INVALID_ACCESS_TOKEN);
                 Gson gson = new GsonBuilder().create();
                 return new ResponseEntity(gson.toJson(status), responseHeaders ,HttpStatus.UNAUTHORIZED);
             }
@@ -97,7 +99,6 @@ public class UserInfoController {
             String username = oAuthService.getUsernameByAccessToken(accessToken);
             User user = userService.findByUsername(username);
             Gson gson = new GsonBuilder().create();
-
             return new ResponseEntity(gson.toJson(user), HttpStatus.OK);
         } catch (OAuthProblemException e) {
             //检查是否设置了错误码
@@ -105,7 +106,7 @@ public class UserInfoController {
             if (OAuthUtils.isEmpty(errorCode)) {
                 OAuthResponse oauthResponse = OAuthRSResponse
                         .errorResponse(HttpServletResponse.SC_UNAUTHORIZED)
-                        .setRealm(Constants.RESOURCE_SERVER_NAME)
+                        .setRealm(Config.RESOURCE_SERVER_NAME)
                         .buildHeaderMessage();
                 HttpHeaders headers = new HttpHeaders();
                 headers.add(OAuth.HeaderType.WWW_AUTHENTICATE, oauthResponse.getHeader(OAuth.HeaderType.WWW_AUTHENTICATE));
@@ -113,7 +114,7 @@ public class UserInfoController {
             }
             OAuthResponse oauthResponse = OAuthRSResponse
                     .errorResponse(HttpServletResponse.SC_UNAUTHORIZED)
-                    .setRealm(Constants.RESOURCE_SERVER_NAME)
+                    .setRealm(Config.RESOURCE_SERVER_NAME)
                     .setError(e.getError())
                     .setErrorDescription(e.getDescription())
                     .setErrorUri(e.getUri())

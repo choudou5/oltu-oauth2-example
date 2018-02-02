@@ -1,6 +1,6 @@
 package cn.zetark.oauth2.web.controller.oauth;
 
-import cn.zetark.oauth2.Constants;
+import cn.zetark.oauth2.Config;
 import cn.zetark.oauth2.service.OAuthService;
 import org.apache.oltu.oauth2.as.issuer.MD5Generator;
 import org.apache.oltu.oauth2.as.issuer.OAuthIssuer;
@@ -53,7 +53,7 @@ public class AccessTokenController {
                 OAuthResponse response =
                         OAuthASResponse.errorResponse(HttpServletResponse.SC_BAD_REQUEST)
                                 .setError(OAuthError.TokenResponse.INVALID_CLIENT)
-                                .setErrorDescription(Constants.INVALID_CLIENT_ID)
+                                .setErrorDescription(Config.INVALID_CLIENT_ID)
                                 .buildJSONMessage();
                 return new ResponseEntity(response.getBody(), HttpStatus.valueOf(response.getResponseStatus()));
             }
@@ -63,7 +63,7 @@ public class AccessTokenController {
                 OAuthResponse response =
                         OAuthASResponse.errorResponse(HttpServletResponse.SC_UNAUTHORIZED)
                                 .setError(OAuthError.TokenResponse.UNAUTHORIZED_CLIENT)
-                                .setErrorDescription(Constants.INVALID_CLIENT_ID)
+                                .setErrorDescription(Config.INVALID_CLIENT_ID)
                                 .buildJSONMessage();
                 return new ResponseEntity(response.getBody(), HttpStatus.valueOf(response.getResponseStatus()));
             }
@@ -75,7 +75,7 @@ public class AccessTokenController {
                     OAuthResponse response = OAuthASResponse
                             .errorResponse(HttpServletResponse.SC_BAD_REQUEST)
                             .setError(OAuthError.TokenResponse.INVALID_GRANT)
-                            .setErrorDescription(Constants.INVALID_AUTH_CODE)
+                            .setErrorDescription(Config.INVALID_AUTH_CODE)
                             .buildJSONMessage();
                     return new ResponseEntity(response.getBody(), HttpStatus.valueOf(response.getResponseStatus()));
                 }

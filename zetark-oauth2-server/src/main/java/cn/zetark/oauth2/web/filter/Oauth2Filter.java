@@ -1,6 +1,6 @@
 package cn.zetark.oauth2.web.filter;
 
-import cn.zetark.oauth2.Constants;
+import cn.zetark.oauth2.Config;
 import cn.zetark.oauth2.entity.Status;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -27,12 +27,10 @@ import java.util.logging.Logger;
 
 public class Oauth2Filter implements Filter{
 
-    @Override
     public void init(FilterConfig filterConfig) throws ServletException {
 
     }
 
-    @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletResponse res = (HttpServletResponse) response;
         try {
@@ -42,7 +40,6 @@ public class Oauth2Filter implements Filter{
             // OAuthAccessResourceRequest oauthRequest = new OAuthAccessResourceRequest((HttpServletRequest) request, ParameterStyle.HEADER); // 从HttpHead头中获取参数
 
             String accessToken = oauthRequest.getAccessToken();
-
             //验证Access Token
             if (!checkAccessToken(accessToken)) {
                 // 如果不存在/过期了，返回未验证错误，需重新验证
@@ -70,7 +67,7 @@ public class Oauth2Filter implements Filter{
     private void oAuthFaileResponse(HttpServletResponse res) throws OAuthSystemException, IOException {
         OAuthResponse oauthResponse = OAuthRSResponse
                 .errorResponse(HttpServletResponse.SC_UNAUTHORIZED)
-                .setRealm(Constants.RESOURCE_SERVER_NAME)
+                .setRealm(Config.RESOURCE_SERVER_NAME)
                 .setError(OAuthError.ResourceResponse.INVALID_TOKEN)
                 .buildHeaderMessage();
         HttpHeaders responseHeaders = new HttpHeaders();
@@ -78,7 +75,7 @@ public class Oauth2Filter implements Filter{
         Gson gson = new GsonBuilder().create();
         res.addHeader(OAuth.HeaderType.WWW_AUTHENTICATE, oauthResponse.getHeader(OAuth.HeaderType.WWW_AUTHENTICATE));
         PrintWriter writer = res.getWriter();
-        writer.write(gson.toJson(getStatus(HttpStatus.UNAUTHORIZED.value(),Constants.INVALID_ACCESS_TOKEN)));
+        writer.write(gson.toJson(getStatus(HttpStatus.UNAUTHORIZED.value(), Config.INVALID_ACCESS_TOKEN)));
         writer.flush();
         writer.close();
     }
@@ -90,7 +87,7 @@ public class Oauth2Filter implements Filter{
      * @throws IOException
      */
     private boolean checkAccessToken(String accessToken) throws IOException {
-        URL url = new URL(Constants.CHECK_ACCESS_CODE_URL+accessToken);
+        URL url = new URL(Config.CHECK_ACCESS_CODE_URL+accessToken);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("POST");
         conn.disconnect();
@@ -104,7 +101,6 @@ public class Oauth2Filter implements Filter{
         return status;
     }
 
-    @Override
     public void destroy() {
 
     }
